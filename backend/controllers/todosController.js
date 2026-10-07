@@ -84,8 +84,9 @@ const deleteTodo = async (req, res) => {
 };
 
 
-const completedTodo = async (req, res) => {
+const updateTodoStatus = async (req, res) => {
     const { todoId } = req.params
+    const { status } = req.body
     if (!todoId) {
         return res.status(400).json({
             message: "Todo Id required"
@@ -96,9 +97,10 @@ const completedTodo = async (req, res) => {
         const todo = await Todos.findByIdAndUpdate(
             todoId,
             {
-                completed: true
+                status
             },
             {
+                returnDocument: "after",
                 new: true
             }
         )
@@ -126,14 +128,14 @@ const editTodo = async (req, res) => {
 
     const checkTodo = await Todos.findById(todoId)
 
-    if(title == checkTodo.title && description == checkTodo.description){
+    if (title == checkTodo.title && description == checkTodo.description) {
         return res.status(400).json({
-            message:"No changes detected."
+            message: "No changes detected."
         })
     }
 
     try {
-        
+
         const todo = await Todos.findByIdAndUpdate(
             todoId,
             {
@@ -163,6 +165,6 @@ export {
     addTodo,
     getTodos,
     deleteTodo,
-    completedTodo,
+    updateTodoStatus,
     editTodo
 }

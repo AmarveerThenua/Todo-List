@@ -237,11 +237,13 @@ const Dashboard = () => {
         }
     };
 
-    const completedTodo = async (todoId) => {
+    const updateTodoStatus = async (todoId, status) => {
         try {
             const response = await axios.patch(
-                `${BASE_URL}/completed/${todoId}`,
-                {},
+                `${BASE_URL}/status/${todoId}`,
+                {
+                    status
+                },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -290,11 +292,16 @@ const Dashboard = () => {
     };
 
     const filteredTodos = todos.filter((todo) => {
-        if (filter === "completed") {
-            return todo.completed;
-        }
         if (filter === "pending") {
-            return !todo.completed;
+            return todo.status === "Pending";
+        }
+
+        if (filter === "progress") {
+            return todo.status === "Progress"
+        }
+
+        if (filter === "completed") {
+            return todo.status === "Completed";
         }
         return true;
     })
@@ -429,7 +436,7 @@ const Dashboard = () => {
 
                         <button
                             type="submit"
-                            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold active:scale-98 hover:bg-blue-700 transition"
+                            className="px-6 py-3 bg-blue-600 text-white rounded-lg cursor-pointer font-semibold active:scale-98 hover:bg-blue-700 transition"
                         >
                             {editTodoId ? "Update Todo" : "+ Add Todo"}
                         </button>
@@ -486,14 +493,21 @@ const Dashboard = () => {
                                     </h4>
 
                                     <span
-                                        className={`text-xs px-2.5 py-1 rounded-full font-medium ${todo.completed
+                                        className={`text-xs px-2.5 py-1 rounded-full font-medium ${todo.status == "Completed"
                                             ? "bg-green-100 text-green-700"
-                                            : "bg-yellow-100 text-yellow-700"
+                                            :
+                                            todo.status === "Progress"
+                                                ? "bg-blue-100 text-blue-800"
+                                                : "bg-yellow-100 text-yellow-700"
+
                                             }`}
                                     >
-                                        {todo.completed
-                                            ? "Completed"
-                                            : "Pending"}
+                                        {todo.status === "Progress"
+                                            ? "Progress"
+                                            : todo.status === "Completed"
+                                                ? "Completed"
+                                                : "Pending"
+                                        }
                                     </span>
 
                                 </div>
@@ -520,13 +534,30 @@ const Dashboard = () => {
                                 <div className="flex gap-2 mt-6">
 
                                     <button
-                                        disabled={todo.completed}
+                                        disabled={todo.status === "Completed"}
                                         onClick={() => {
-                                            completedTodo(todo._id);
+                                            if (todo.status === "Pending") {
+                                                updateTodoStatus(todo._id, "Progress")
+                                            }
+                                            else if (todo.status === "Progress") {
+                                                updateTodoStatus(todo._id, "Completed")
+                                            }
                                         }}
-                                        className="cursor-po flex-1 py-2 border border-green-500 text-green-600 rounded-lg text-sm font-medium hover:bg-green-50 transition"
+                                        className={`whitespace-nowrap cursor-po flex-1 py-2 border border-green-500 text-green-600 rounded-lg text-sm font-medium hover:bg-green-50 transition 
+                                            ${todo.status === "Completed"
+                                                ? "border-gray-300 text-gray-400 bg-gray-100 cursor-not-allowed"
+                                                : "border-green-500 text-green-600 hover:bg-green-50 cursor-pointer"
+                                            }
+                                            `}
                                     >
-                                        <FontAwesomeIcon icon={faSquareCheck} /> Complete
+                                        <FontAwesomeIcon icon={faSquareCheck} /> {
+                                            todo.status === "Pending"
+                                                ? "Start Todo"
+                                                : todo.status === "Progress"
+                                                    ? "Complete Todo"
+                                                    : "Completed"
+
+                                        }
                                     </button>
 
                                     <button
@@ -553,8 +584,8 @@ const Dashboard = () => {
 
                 </div>
 
-            </main>
-        </div>
+            </main >
+        </div >
     );
 };
 

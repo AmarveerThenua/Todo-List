@@ -2,7 +2,7 @@ import {
     addTodo,
     getTodos,
     deleteTodo,
-    completedTodo,
+    updateTodoStatus,
     editTodo
 } from "../controllers/todosController.js"
 
@@ -15,7 +15,7 @@ const router = express.Router()
 router.post('/addtodo', protect, addTodo)
 router.get("/gettodos/:userId", protect, getTodos)
 router.delete("/delete/:todoId", protect, deleteTodo)
-router.patch('/completed/:todoId', protect, completedTodo)
+router.patch('/status/:todoId', protect, updateTodoStatus)
 router.patch('/edit/:todoId', protect, editTodo)
 
 export default router

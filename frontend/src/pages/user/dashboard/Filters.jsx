@@ -19,6 +19,7 @@ const Filters = ({ onFilterChange }) => {
             >
                 <option value="">All Status</option>
                 <option value="pending">Pending</option>
+                <option value="progress">Progress</option>
                 <option value="completed">Completed</option>
             </select>
 
